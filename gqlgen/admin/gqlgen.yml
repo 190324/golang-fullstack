@@ -4,15 +4,14 @@
 # for detailed .gqlgen.yml documentation.
 
 schema:
-- graphql/schema.graphql
-- graphql/schemas/*.graphql
+- gqlgen/admin/schemas/*.graphql
 exec:
-  filename: app/graphQL/generated.go
+  filename: app/graphql/admin/generated.go
   package: generated
 model:
-  filename: graphql/models_gen.go
+  filename: app/graphql/admin/models/models_gen.go
   package: models_gen
 resolver:
-  filename: app/graphQL/resolvers/resolver.go
+  filename: app/graphql/admin/resolvers/resolver.go
   type: Resolver
 autobind: []

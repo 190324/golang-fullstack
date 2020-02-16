@@ -11,7 +11,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	models_gen "example.com/gqlgen/graphql"
+	models_gen "example.com/gqlgen/app/graphql/api/models"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/vektah/gqlparser"
@@ -261,7 +261,16 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var parsedSchema = gqlparser.MustLoadSchema(
-	&ast.Source{Name: "graphql/schema.graphql", Input: `type Query {
+	&ast.Source{Name: "gqlgen/api/schemas/base.graphql", Input: `"The ` + "`" + `Upload` + "`" + ` scalar type represents a multipart file upload."
+scalar Upload
+
+"The ` + "`" + `File` + "`" + ` type, represents the response of uploading a file."
+type File {
+    id: Int!
+    name: String!
+    content: String!
+}`},
+	&ast.Source{Name: "gqlgen/api/schemas/schema.graphql", Input: `type Query {
   todos: [Todo!]!
   user: User @hasRole(role: ADMIN)
 }
@@ -277,16 +286,7 @@ enum Role {
     ADMIN
     USER
 }`},
-	&ast.Source{Name: "graphql/schemas/base.graphql", Input: `"The ` + "`" + `Upload` + "`" + ` scalar type represents a multipart file upload."
-scalar Upload
-
-"The ` + "`" + `File` + "`" + ` type, represents the response of uploading a file."
-type File {
-    id: Int!
-    name: String!
-    content: String!
-}`},
-	&ast.Source{Name: "graphql/schemas/todo.graphql", Input: `type Todo {
+	&ast.Source{Name: "gqlgen/api/schemas/todo.graphql", Input: `type Todo {
   id: ID!
   text: String!
   done: Boolean!
@@ -298,7 +298,7 @@ input NewTodo {
   userId: String!
 }
 `},
-	&ast.Source{Name: "graphql/schemas/user.graphql", Input: `type User {
+	&ast.Source{Name: "gqlgen/api/schemas/user.graphql", Input: `type User {
   id: ID!
   name: String!
 }
@@ -314,7 +314,7 @@ func (ec *executionContext) dir_hasRole_args(ctx context.Context, rawArgs map[st
 	args := map[string]interface{}{}
 	var arg0 models_gen.Role
 	if tmp, ok := rawArgs["role"]; ok {
-		arg0, err = ec.unmarshalNRole2exampleᚗcomᚋgqlgenᚋgraphqlᚐRole(ctx, tmp)
+		arg0, err = ec.unmarshalNRole2exampleᚗcomᚋgqlgenᚋappᚋgraphqlᚋapiᚋmodelsᚐRole(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -328,7 +328,7 @@ func (ec *executionContext) field_Mutation_createTodo_args(ctx context.Context, 
 	args := map[string]interface{}{}
 	var arg0 models_gen.NewTodo
 	if tmp, ok := rawArgs["input"]; ok {
-		arg0, err = ec.unmarshalNNewTodo2exampleᚗcomᚋgqlgenᚋgraphqlᚐNewTodo(ctx, tmp)
+		arg0, err = ec.unmarshalNNewTodo2exampleᚗcomᚋgqlgenᚋappᚋgraphqlᚋapiᚋmodelsᚐNewTodo(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -553,7 +553,7 @@ func (ec *executionContext) _Mutation_createTodo(ctx context.Context, field grap
 	res := resTmp.(*models_gen.Todo)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNTodo2ᚖexampleᚗcomᚋgqlgenᚋgraphqlᚐTodo(ctx, field.Selections, res)
+	return ec.marshalNTodo2ᚖexampleᚗcomᚋgqlgenᚋappᚋgraphqlᚋapiᚋmodelsᚐTodo(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_singleUpload(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -597,7 +597,7 @@ func (ec *executionContext) _Mutation_singleUpload(ctx context.Context, field gr
 	res := resTmp.(*models_gen.File)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNFile2ᚖexampleᚗcomᚋgqlgenᚋgraphqlᚐFile(ctx, field.Selections, res)
+	return ec.marshalNFile2ᚖexampleᚗcomᚋgqlgenᚋappᚋgraphqlᚋapiᚋmodelsᚐFile(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_todos(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -634,7 +634,7 @@ func (ec *executionContext) _Query_todos(ctx context.Context, field graphql.Coll
 	res := resTmp.([]*models_gen.Todo)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNTodo2ᚕᚖexampleᚗcomᚋgqlgenᚋgraphqlᚐTodoᚄ(ctx, field.Selections, res)
+	return ec.marshalNTodo2ᚕᚖexampleᚗcomᚋgqlgenᚋappᚋgraphqlᚋapiᚋmodelsᚐTodoᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_user(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -660,7 +660,7 @@ func (ec *executionContext) _Query_user(ctx context.Context, field graphql.Colle
 			return ec.resolvers.Query().User(rctx)
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2exampleᚗcomᚋgqlgenᚋgraphqlᚐRole(ctx, "ADMIN")
+			role, err := ec.unmarshalNRole2exampleᚗcomᚋgqlgenᚋappᚋgraphqlᚋapiᚋmodelsᚐRole(ctx, "ADMIN")
 			if err != nil {
 				return nil, err
 			}
@@ -680,7 +680,7 @@ func (ec *executionContext) _Query_user(ctx context.Context, field graphql.Colle
 		if data, ok := tmp.(*models_gen.User); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *example.com/gqlgen/graphql.User`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *example.com/gqlgen/app/graphql/api/models.User`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -692,7 +692,7 @@ func (ec *executionContext) _Query_user(ctx context.Context, field graphql.Colle
 	res := resTmp.(*models_gen.User)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOUser2ᚖexampleᚗcomᚋgqlgenᚋgraphqlᚐUser(ctx, field.Selections, res)
+	return ec.marshalOUser2ᚖexampleᚗcomᚋgqlgenᚋappᚋgraphqlᚋapiᚋmodelsᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -912,7 +912,7 @@ func (ec *executionContext) _Todo_user(ctx context.Context, field graphql.Collec
 	res := resTmp.(*models_gen.User)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOUser2ᚖexampleᚗcomᚋgqlgenᚋgraphqlᚐUser(ctx, field.Selections, res)
+	return ec.marshalOUser2ᚖexampleᚗcomᚋgqlgenᚋappᚋgraphqlᚋapiᚋmodelsᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *models_gen.User) (ret graphql.Marshaler) {
@@ -2630,11 +2630,11 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNFile2exampleᚗcomᚋgqlgenᚋgraphqlᚐFile(ctx context.Context, sel ast.SelectionSet, v models_gen.File) graphql.Marshaler {
+func (ec *executionContext) marshalNFile2exampleᚗcomᚋgqlgenᚋappᚋgraphqlᚋapiᚋmodelsᚐFile(ctx context.Context, sel ast.SelectionSet, v models_gen.File) graphql.Marshaler {
 	return ec._File(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNFile2ᚖexampleᚗcomᚋgqlgenᚋgraphqlᚐFile(ctx context.Context, sel ast.SelectionSet, v *models_gen.File) graphql.Marshaler {
+func (ec *executionContext) marshalNFile2ᚖexampleᚗcomᚋgqlgenᚋappᚋgraphqlᚋapiᚋmodelsᚐFile(ctx context.Context, sel ast.SelectionSet, v *models_gen.File) graphql.Marshaler {
 	if v == nil {
 		if !ec.HasError(graphql.GetResolverContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -2672,16 +2672,16 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) unmarshalNNewTodo2exampleᚗcomᚋgqlgenᚋgraphqlᚐNewTodo(ctx context.Context, v interface{}) (models_gen.NewTodo, error) {
+func (ec *executionContext) unmarshalNNewTodo2exampleᚗcomᚋgqlgenᚋappᚋgraphqlᚋapiᚋmodelsᚐNewTodo(ctx context.Context, v interface{}) (models_gen.NewTodo, error) {
 	return ec.unmarshalInputNewTodo(ctx, v)
 }
 
-func (ec *executionContext) unmarshalNRole2exampleᚗcomᚋgqlgenᚋgraphqlᚐRole(ctx context.Context, v interface{}) (models_gen.Role, error) {
+func (ec *executionContext) unmarshalNRole2exampleᚗcomᚋgqlgenᚋappᚋgraphqlᚋapiᚋmodelsᚐRole(ctx context.Context, v interface{}) (models_gen.Role, error) {
 	var res models_gen.Role
 	return res, res.UnmarshalGQL(v)
 }
 
-func (ec *executionContext) marshalNRole2exampleᚗcomᚋgqlgenᚋgraphqlᚐRole(ctx context.Context, sel ast.SelectionSet, v models_gen.Role) graphql.Marshaler {
+func (ec *executionContext) marshalNRole2exampleᚗcomᚋgqlgenᚋappᚋgraphqlᚋapiᚋmodelsᚐRole(ctx context.Context, sel ast.SelectionSet, v models_gen.Role) graphql.Marshaler {
 	return v
 }
 
@@ -2699,11 +2699,11 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) marshalNTodo2exampleᚗcomᚋgqlgenᚋgraphqlᚐTodo(ctx context.Context, sel ast.SelectionSet, v models_gen.Todo) graphql.Marshaler {
+func (ec *executionContext) marshalNTodo2exampleᚗcomᚋgqlgenᚋappᚋgraphqlᚋapiᚋmodelsᚐTodo(ctx context.Context, sel ast.SelectionSet, v models_gen.Todo) graphql.Marshaler {
 	return ec._Todo(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNTodo2ᚕᚖexampleᚗcomᚋgqlgenᚋgraphqlᚐTodoᚄ(ctx context.Context, sel ast.SelectionSet, v []*models_gen.Todo) graphql.Marshaler {
+func (ec *executionContext) marshalNTodo2ᚕᚖexampleᚗcomᚋgqlgenᚋappᚋgraphqlᚋapiᚋmodelsᚐTodoᚄ(ctx context.Context, sel ast.SelectionSet, v []*models_gen.Todo) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -2727,7 +2727,7 @@ func (ec *executionContext) marshalNTodo2ᚕᚖexampleᚗcomᚋgqlgenᚋgraphql�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNTodo2ᚖexampleᚗcomᚋgqlgenᚋgraphqlᚐTodo(ctx, sel, v[i])
+			ret[i] = ec.marshalNTodo2ᚖexampleᚗcomᚋgqlgenᚋappᚋgraphqlᚋapiᚋmodelsᚐTodo(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -2740,7 +2740,7 @@ func (ec *executionContext) marshalNTodo2ᚕᚖexampleᚗcomᚋgqlgenᚋgraphql�
 	return ret
 }
 
-func (ec *executionContext) marshalNTodo2ᚖexampleᚗcomᚋgqlgenᚋgraphqlᚐTodo(ctx context.Context, sel ast.SelectionSet, v *models_gen.Todo) graphql.Marshaler {
+func (ec *executionContext) marshalNTodo2ᚖexampleᚗcomᚋgqlgenᚋappᚋgraphqlᚋapiᚋmodelsᚐTodo(ctx context.Context, sel ast.SelectionSet, v *models_gen.Todo) graphql.Marshaler {
 	if v == nil {
 		if !ec.HasError(graphql.GetResolverContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -3036,11 +3036,11 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	return ec.marshalOString2string(ctx, sel, *v)
 }
 
-func (ec *executionContext) marshalOUser2exampleᚗcomᚋgqlgenᚋgraphqlᚐUser(ctx context.Context, sel ast.SelectionSet, v models_gen.User) graphql.Marshaler {
+func (ec *executionContext) marshalOUser2exampleᚗcomᚋgqlgenᚋappᚋgraphqlᚋapiᚋmodelsᚐUser(ctx context.Context, sel ast.SelectionSet, v models_gen.User) graphql.Marshaler {
 	return ec._User(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalOUser2ᚖexampleᚗcomᚋgqlgenᚋgraphqlᚐUser(ctx context.Context, sel ast.SelectionSet, v *models_gen.User) graphql.Marshaler {
+func (ec *executionContext) marshalOUser2ᚖexampleᚗcomᚋgqlgenᚋappᚋgraphqlᚋapiᚋmodelsᚐUser(ctx context.Context, sel ast.SelectionSet, v *models_gen.User) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

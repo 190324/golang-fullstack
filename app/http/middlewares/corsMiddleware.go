@@ -7,7 +7,7 @@ import (
 
 func CorsMiddleware() gin.HandlerFunc {
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:8081", "http://localhost:3000"}
+	config.AllowOrigins = []string{"http://localhost:8080", "http://localhost:7885", "http://localhost:3000"}
 
 	return cors.New(config)
 }

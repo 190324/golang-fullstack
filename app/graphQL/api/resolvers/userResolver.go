@@ -3,7 +3,7 @@ package resolvers
 import (
 	"context"
 
-	models_gen "example.com/gqlgen/graphql"
+	models_gen "example.com/gqlgen/app/graphql/api/models"
 )
 
 func (r *queryResolver) User(ctx context.Context) (*models_gen.User, error) {

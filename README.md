@@ -1,7 +1,11 @@
 ## 更新 gqlgen 腳本
 
 ```
-go run scripts/gqlgen.go
+API 
+go run scripts/gqlgen.go -c gqlgen/api/gqlgen.yml
+
+ADMIN 
+go run scripts/gqlgen.go -c gqlgen/admin/gqlgen.yml
 ```
 
 ## 啟動 API Server

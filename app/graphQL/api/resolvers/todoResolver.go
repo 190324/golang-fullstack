@@ -4,7 +4,7 @@ import (
 	"context"
 	"io/ioutil"
 
-	models_gen "example.com/gqlgen/graphql"
+	models_gen "example.com/gqlgen/app/graphql/api/models"
 	"github.com/99designs/gqlgen/graphql"
 )
 
