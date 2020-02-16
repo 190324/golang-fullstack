@@ -1,7 +1,6 @@
-#import types/*.graphql
-
 type Query {
   todos: [Todo!]!
+  user: User
 }
 
 type Mutation {
