@@ -1,0 +1,4 @@
+.next
+yarn.lock
+*.d.ts
+node_modules
