@@ -4,7 +4,7 @@
 # for detailed .gqlgen.yml documentation.
 
 schema:
-- gqlgen/api/schemas/*.graphql
+  - gqlgen/api/schemas/**/*.graphql
 exec:
   filename: app/graphql/api/generated.go
   package: generated
@@ -12,6 +12,7 @@ model:
   filename: app/graphql/api/models/models_gen.go
   package: models_gen
 resolver:
-  filename: app/graphql/api/resolvers/resolver.go
-  type: Resolver
+  layout: follow-schema
+  dir: app/graphql/api/resolvers
+  package: resolvers
 autobind: []

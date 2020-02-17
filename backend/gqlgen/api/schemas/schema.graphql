@@ -1,13 +1,3 @@
-type Query {
-  todos: [Todo!]!
-  user: User @hasRole(role: ADMIN)
-}
-
-type Mutation {
-  createTodo(input: NewTodo!): Todo!
-  singleUpload(file: Upload!): File!
-}
-
 directive @hasRole(role: Role!) on FIELD_DEFINITION
 
 enum Role {

@@ -1,3 +1,7 @@
+extend type Query {
+  user: User @hasRole(role: ADMIN)
+}
+
 type User {
   id: ID!
   name: String!
