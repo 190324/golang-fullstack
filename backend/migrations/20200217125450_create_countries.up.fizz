@@ -1,0 +1,6 @@
+create_table("countries") {
+	t.Column("id", "uuid", {primary: true})
+	t.Column("name", "text", {})
+	t.Column("email", "text", {})
+	t.Timestamps()
+}
