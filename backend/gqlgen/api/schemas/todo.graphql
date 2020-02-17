@@ -9,7 +9,7 @@ type Mutation {
 
 type Todo {
   id: ID!
-  text: String!
+  text: String! @hasRole(role: ADMIN)
   done: Boolean!
   user: User
 }

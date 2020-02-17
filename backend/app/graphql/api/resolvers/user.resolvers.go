@@ -4,7 +4,6 @@ package resolvers
 
 import (
 	"context"
-	// "fmt"
 
 	models_gen "example.com/gqlgen/app/graphql/api/models"
 )

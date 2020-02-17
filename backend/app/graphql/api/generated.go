@@ -263,15 +263,6 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	&ast.Source{Name: "gqlgen/api/schemas/base.graphql", Input: `"The ` + "`" + `Upload` + "`" + ` scalar type represents a multipart file upload."
-scalar Upload
-
-"The ` + "`" + `File` + "`" + ` type, represents the response of uploading a file."
-type File {
-    id: Int!
-    name: String!
-    content: String!
-}`, BuiltIn: false},
 	&ast.Source{Name: "gqlgen/api/schemas/schema.graphql", Input: `directive @hasRole(role: Role!) on FIELD_DEFINITION
 
 enum Role {
@@ -289,7 +280,7 @@ type Mutation {
 
 type Todo {
   id: ID!
-  text: String!
+  text: String! @hasRole(role: ADMIN)
   done: Boolean!
   user: User
 }
@@ -305,6 +296,15 @@ input NewTodo {
 type User {
   id: ID!
   name: String!
+}`, BuiltIn: false},
+	&ast.Source{Name: "gqlgen/schemas/base.graphql", Input: `"The ` + "`" + `Upload` + "`" + ` scalar type represents a multipart file upload."
+scalar Upload
+
+"The ` + "`" + `File` + "`" + ` type, represents the response of uploading a file."
+type File {
+    id: Int!
+    name: String!
+    content: String!
 }`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -797,8 +797,32 @@ func (ec *executionContext) _Todo_text(ctx context.Context, field graphql.Collec
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Text, nil
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.Text, nil
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2exampleᚗcomᚋgqlgenᚋappᚋgraphqlᚋapiᚋmodelsᚐRole(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, obj, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, err
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(string); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be string`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
