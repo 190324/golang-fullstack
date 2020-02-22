@@ -1,0 +1,15 @@
+type Product {
+    id: ID! 
+    name: String!
+    desp: String
+    images: [ProductImage]!
+}
+
+type ProductImage {
+    id: ID!
+    no: String!
+    product: Product!
+    image: String!
+    seq: Int!
+    is_main: Boolean!
+}

@@ -1,0 +1,8 @@
+extend type Query {
+  me: Member
+}
+
+extend type Mutation {
+  forgotPassword(email: String!): String
+  # resetPassword(resetToken: String!, password: String!): ResetPasswordPayload
+}

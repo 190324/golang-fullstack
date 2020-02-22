@@ -1,0 +1,20 @@
+extend type Query {
+    product(ID: ID!): Product!
+}
+
+extend type Mutation {
+    setProduct(input: InputSetProduct!): SetProductPayload
+}
+
+input InputSetProduct {
+    id: ID
+    name: String!
+    desp: String!
+    images: [Upload!]!
+}
+
+type SetProductPayload implements PayloadEntity{
+    code: Int!
+    msg: String!
+    data: String!
+} 
