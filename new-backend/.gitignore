@@ -18,3 +18,4 @@ vendor/
 .env.yml
 tmp/
 logger.txt
+storage/key/*

@@ -44,7 +44,7 @@ func commandMigration() {
 		os.Exit(1)
 	}
 
-	migrationPath := "migrations/" + os.Args[3]
+	migrationPath := "database/migrations/" + os.Args[3]
 
 	runCommand("soda", "g", "sql", os.Args[2], "-p", migrationPath, "-e", os.Args[3])
 }
@@ -63,7 +63,7 @@ func commandMigrate() {
 	}
 
 	_db := os.Args[postion+1]
-	migrationPath := "migrations/" + _db
+	migrationPath := "database/migrations/" + _db
 
 	if len(os.Args) == 2 || os.Args[2] == "up" {
 		runCommand("soda", "migrate", "-p", migrationPath, "-e", _db)

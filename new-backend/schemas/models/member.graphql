@@ -2,3 +2,25 @@ type Member {
   id: ID!
   name: String!
 }
+
+type PayloadAuth {
+    access_token: String!
+    refresh_token: String!
+    expires_in: Int!
+    token_type: String!
+}
+
+type PayloadLogout {
+    status: String!
+    message: String
+}
+
+input InputLogin {
+    email: String!
+    password: String!
+}
+
+
+input InputRefreshToken {
+    refresh_token: String
+}

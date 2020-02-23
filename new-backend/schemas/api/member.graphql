@@ -5,4 +5,8 @@ extend type Query {
 extend type Mutation {
   forgotPassword(email: String!): String
   # resetPassword(resetToken: String!, password: String!): ResetPasswordPayload
+  # signup(input: InputSignup!): Member!
+  login(input: InputLogin!): PayloadAuth!
+  # refreshToken(input: InputRefreshToken): PayloadAuth!
+  # logout: PayloadLogout!
 }

@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	github.com/99designs/gqlgen v0.11.1
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/cors v1.3.0
 	github.com/gin-gonic/gin v1.5.0
 	github.com/gobuffalo/attrs v1.0.0 // indirect
@@ -26,4 +27,5 @@ require (
 	github.com/spf13/cobra v0.0.6 // indirect
 	github.com/spf13/viper v1.6.2
 	github.com/vektah/gqlparser/v2 v2.0.1
+	golang.org/x/crypto v0.0.0-20191122220453-ac88ee75c92c
 )

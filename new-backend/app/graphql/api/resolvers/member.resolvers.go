@@ -5,7 +5,13 @@ package resolvers
 import (
 	generated "XinAPI/app/graphql/api"
 	models_gen "XinAPI/app/graphql/api/models"
+	"XinAPI/app/http/middlewares"
 	"XinAPI/app/mail"
+	"XinAPI/pkg/jwt"
+	"fmt"
+	"time"
+
+	// . "XinAPI/pkg/log"
 	"context"
 )
 
@@ -19,8 +25,38 @@ func (r *mutationResolver) ForgotPassword(ctx context.Context, email string) (*s
 	return &str, nil
 }
 
+func (r *mutationResolver) Login(ctx context.Context, input models_gen.InputLogin) (*models_gen.PayloadAuth, error) {
+
+	if input.Email == "test@liontravel.com" && input.Password == "0000" {
+
+		validTime := time.Hour * time.Duration(1)
+		jwtdata := jwt.JWTStandard{
+			Id:        "1",
+			Name:      "hello world",
+			ValidTime: validTime,
+			Issuer:    "xinmedia.com",
+			Subject:   "login",
+		}
+
+		token, _ := jwtdata.Create()
+
+		return &models_gen.PayloadAuth{
+			AccessToken:  token,
+			RefreshToken: token,
+			ExpiresIn:    int(time.Now().Add(validTime).Unix()),
+			TokenType:    "login",
+		}, nil
+	}
+
+	return nil, nil
+}
+
 func (r *queryResolver) Me(ctx context.Context) (*models_gen.Member, error) {
 	// panic(fmt.Errorf("not implemented"))
+
+	gc, _ := middlewares.GinContextFromContext(ctx)
+
+	fmt.Println(gc.Get("role"))
 
 	return &models_gen.Member{
 		ID:   "123",

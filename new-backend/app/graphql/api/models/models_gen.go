@@ -2,7 +2,48 @@
 
 package models_gen
 
+type PayloadEntity interface {
+	IsPayloadEntity()
+}
+
+type InputLogin struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type InputRefreshToken struct {
+	RefreshToken *string `json:"refresh_token"`
+}
+
 type Member struct {
-	ID   string `json:"id" db:"id"`
-	Name string `json:"name" db:"name"`
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type PayloadAuth struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+	ExpiresIn    int    `json:"expires_in"`
+	TokenType    string `json:"token_type"`
+}
+
+type PayloadLogout struct {
+	Status  string  `json:"status"`
+	Message *string `json:"message"`
+}
+
+type Product struct {
+	ID     string          `json:"id"`
+	Name   string          `json:"name"`
+	Desp   *string         `json:"desp"`
+	Images []*ProductImage `json:"images"`
+}
+
+type ProductImage struct {
+	ID      string   `json:"id"`
+	No      string   `json:"no"`
+	Product *Product `json:"product"`
+	Image   string   `json:"image"`
+	Seq     int      `json:"seq"`
+	IsMain  bool     `json:"is_main"`
 }
