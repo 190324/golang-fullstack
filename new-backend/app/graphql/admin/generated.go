@@ -4,6 +4,7 @@ package generated
 
 import (
 	models_gen "XinAPI/app/graphql/admin/models"
+	"XinAPI/app/http/models"
 	"bytes"
 	"context"
 	"errors"
@@ -37,6 +38,7 @@ type Config struct {
 
 type ResolverRoot interface {
 	Mutation() MutationResolver
+	Product() ProductResolver
 	Query() QueryResolver
 }
 
@@ -53,18 +55,30 @@ type ComplexityRoot struct {
 		SetProduct func(childComplexity int, input models_gen.InputSetProduct) int
 	}
 
+	PayloadAuth struct {
+		AccessToken  func(childComplexity int) int
+		ExpiresIn    func(childComplexity int) int
+		RefreshToken func(childComplexity int) int
+		TokenType    func(childComplexity int) int
+	}
+
+	PayloadLogout struct {
+		Message func(childComplexity int) int
+		Status  func(childComplexity int) int
+	}
+
 	Product struct {
-		Desp   func(childComplexity int) int
-		ID     func(childComplexity int) int
-		Images func(childComplexity int) int
-		Name   func(childComplexity int) int
+		Desp          func(childComplexity int) int
+		ID            func(childComplexity int) int
+		Name          func(childComplexity int) int
+		No            func(childComplexity int) int
+		ProductImages func(childComplexity int) int
 	}
 
 	ProductImage struct {
 		ID      func(childComplexity int) int
 		Image   func(childComplexity int) int
 		IsMain  func(childComplexity int) int
-		No      func(childComplexity int) int
 		Product func(childComplexity int) int
 		Seq     func(childComplexity int) int
 	}
@@ -83,8 +97,11 @@ type ComplexityRoot struct {
 type MutationResolver interface {
 	SetProduct(ctx context.Context, input models_gen.InputSetProduct) (*models_gen.SetProductPayload, error)
 }
+type ProductResolver interface {
+	ProductImages(ctx context.Context, obj *models.Product) ([]*models_gen.ProductImage, error)
+}
 type QueryResolver interface {
-	Product(ctx context.Context, id string) (*models_gen.Product, error)
+	Product(ctx context.Context, id string) (*models.Product, error)
 }
 
 type executableSchema struct {
@@ -128,6 +145,48 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.SetProduct(childComplexity, args["input"].(models_gen.InputSetProduct)), true
 
+	case "PayloadAuth.access_token":
+		if e.complexity.PayloadAuth.AccessToken == nil {
+			break
+		}
+
+		return e.complexity.PayloadAuth.AccessToken(childComplexity), true
+
+	case "PayloadAuth.expires_in":
+		if e.complexity.PayloadAuth.ExpiresIn == nil {
+			break
+		}
+
+		return e.complexity.PayloadAuth.ExpiresIn(childComplexity), true
+
+	case "PayloadAuth.refresh_token":
+		if e.complexity.PayloadAuth.RefreshToken == nil {
+			break
+		}
+
+		return e.complexity.PayloadAuth.RefreshToken(childComplexity), true
+
+	case "PayloadAuth.token_type":
+		if e.complexity.PayloadAuth.TokenType == nil {
+			break
+		}
+
+		return e.complexity.PayloadAuth.TokenType(childComplexity), true
+
+	case "PayloadLogout.message":
+		if e.complexity.PayloadLogout.Message == nil {
+			break
+		}
+
+		return e.complexity.PayloadLogout.Message(childComplexity), true
+
+	case "PayloadLogout.status":
+		if e.complexity.PayloadLogout.Status == nil {
+			break
+		}
+
+		return e.complexity.PayloadLogout.Status(childComplexity), true
+
 	case "Product.desp":
 		if e.complexity.Product.Desp == nil {
 			break
@@ -142,19 +201,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Product.ID(childComplexity), true
 
-	case "Product.images":
-		if e.complexity.Product.Images == nil {
-			break
-		}
-
-		return e.complexity.Product.Images(childComplexity), true
-
 	case "Product.name":
 		if e.complexity.Product.Name == nil {
 			break
 		}
 
 		return e.complexity.Product.Name(childComplexity), true
+
+	case "Product.no":
+		if e.complexity.Product.No == nil {
+			break
+		}
+
+		return e.complexity.Product.No(childComplexity), true
+
+	case "Product.product_images":
+		if e.complexity.Product.ProductImages == nil {
+			break
+		}
+
+		return e.complexity.Product.ProductImages(childComplexity), true
 
 	case "ProductImage.id":
 		if e.complexity.ProductImage.ID == nil {
@@ -176,13 +242,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.ProductImage.IsMain(childComplexity), true
-
-	case "ProductImage.no":
-		if e.complexity.ProductImage.No == nil {
-			break
-		}
-
-		return e.complexity.ProductImage.No(childComplexity), true
 
 	case "ProductImage.product":
 		if e.complexity.ProductImage.Product == nil {
@@ -325,17 +384,39 @@ interface PayloadEntity {
 	&ast.Source{Name: "schemas/models/member.graphql", Input: `type Member {
   id: ID!
   name: String!
+}
+
+type PayloadAuth {
+    access_token: String!
+    refresh_token: String!
+    expires_in: Int!
+    token_type: String!
+}
+
+type PayloadLogout {
+    status: String!
+    message: String
+}
+
+input InputLogin {
+    email: String!
+    password: String!
+}
+
+
+input InputRefreshToken {
+    refresh_token: String
 }`, BuiltIn: false},
 	&ast.Source{Name: "schemas/models/product.graphql", Input: `type Product {
     id: ID! 
+    no: String!
     name: String!
     desp: String
-    images: [ProductImage]!
+    product_images: [ProductImage]!
 }
 
 type ProductImage {
     id: ID!
-    no: String!
     product: Product!
     image: String!
     seq: Int!
@@ -532,7 +613,208 @@ func (ec *executionContext) _Mutation_setProduct(ctx context.Context, field grap
 	return ec.marshalOSetProductPayload2ᚖXinAPIᚋappᚋgraphqlᚋadminᚋmodelsᚐSetProductPayload(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Product_id(ctx context.Context, field graphql.CollectedField, obj *models_gen.Product) (ret graphql.Marshaler) {
+func (ec *executionContext) _PayloadAuth_access_token(ctx context.Context, field graphql.CollectedField, obj *models_gen.PayloadAuth) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "PayloadAuth",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AccessToken, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PayloadAuth_refresh_token(ctx context.Context, field graphql.CollectedField, obj *models_gen.PayloadAuth) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "PayloadAuth",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RefreshToken, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PayloadAuth_expires_in(ctx context.Context, field graphql.CollectedField, obj *models_gen.PayloadAuth) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "PayloadAuth",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ExpiresIn, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PayloadAuth_token_type(ctx context.Context, field graphql.CollectedField, obj *models_gen.PayloadAuth) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "PayloadAuth",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TokenType, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PayloadLogout_status(ctx context.Context, field graphql.CollectedField, obj *models_gen.PayloadLogout) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "PayloadLogout",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Status, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PayloadLogout_message(ctx context.Context, field graphql.CollectedField, obj *models_gen.PayloadLogout) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "PayloadLogout",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Product_id(ctx context.Context, field graphql.CollectedField, obj *models.Product) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -561,12 +843,46 @@ func (ec *executionContext) _Product_id(ctx context.Context, field graphql.Colle
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNID2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Product_name(ctx context.Context, field graphql.CollectedField, obj *models_gen.Product) (ret graphql.Marshaler) {
+func (ec *executionContext) _Product_no(ctx context.Context, field graphql.CollectedField, obj *models.Product) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Product",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.No, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Product_name(ctx context.Context, field graphql.CollectedField, obj *models.Product) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -600,7 +916,7 @@ func (ec *executionContext) _Product_name(ctx context.Context, field graphql.Col
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Product_desp(ctx context.Context, field graphql.CollectedField, obj *models_gen.Product) (ret graphql.Marshaler) {
+func (ec *executionContext) _Product_desp(ctx context.Context, field graphql.CollectedField, obj *models.Product) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -631,7 +947,7 @@ func (ec *executionContext) _Product_desp(ctx context.Context, field graphql.Col
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Product_images(ctx context.Context, field graphql.CollectedField, obj *models_gen.Product) (ret graphql.Marshaler) {
+func (ec *executionContext) _Product_product_images(ctx context.Context, field graphql.CollectedField, obj *models.Product) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -642,13 +958,13 @@ func (ec *executionContext) _Product_images(ctx context.Context, field graphql.C
 		Object:   "Product",
 		Field:    field,
 		Args:     nil,
-		IsMethod: false,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Images, nil
+		return ec.resolvers.Product().ProductImages(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -699,40 +1015,6 @@ func (ec *executionContext) _ProductImage_id(ctx context.Context, field graphql.
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _ProductImage_no(ctx context.Context, field graphql.CollectedField, obj *models_gen.ProductImage) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "ProductImage",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.No, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
 func (ec *executionContext) _ProductImage_product(ctx context.Context, field graphql.CollectedField, obj *models_gen.ProductImage) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -762,9 +1044,9 @@ func (ec *executionContext) _ProductImage_product(ctx context.Context, field gra
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*models_gen.Product)
+	res := resTmp.(*models.Product)
 	fc.Result = res
-	return ec.marshalNProduct2ᚖXinAPIᚋappᚋgraphqlᚋadminᚋmodelsᚐProduct(ctx, field.Selections, res)
+	return ec.marshalNProduct2ᚖXinAPIᚋappᚋhttpᚋmodelsᚐProduct(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _ProductImage_image(ctx context.Context, field graphql.CollectedField, obj *models_gen.ProductImage) (ret graphql.Marshaler) {
@@ -905,9 +1187,9 @@ func (ec *executionContext) _Query_product(ctx context.Context, field graphql.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*models_gen.Product)
+	res := resTmp.(*models.Product)
 	fc.Result = res
-	return ec.marshalNProduct2ᚖXinAPIᚋappᚋgraphqlᚋadminᚋmodelsᚐProduct(ctx, field.Selections, res)
+	return ec.marshalNProduct2ᚖXinAPIᚋappᚋhttpᚋmodelsᚐProduct(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2136,6 +2418,48 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputInputLogin(ctx context.Context, obj interface{}) (models_gen.InputLogin, error) {
+	var it models_gen.InputLogin
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "email":
+			var err error
+			it.Email, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "password":
+			var err error
+			it.Password, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputInputRefreshToken(ctx context.Context, obj interface{}) (models_gen.InputRefreshToken, error) {
+	var it models_gen.InputRefreshToken
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "refresh_token":
+			var err error
+			it.RefreshToken, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputInputSetProduct(ctx context.Context, obj interface{}) (models_gen.InputSetProduct, error) {
 	var it models_gen.InputSetProduct
 	var asMap = obj.(map[string]interface{})
@@ -2256,9 +2580,80 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 	return out
 }
 
+var payloadAuthImplementors = []string{"PayloadAuth"}
+
+func (ec *executionContext) _PayloadAuth(ctx context.Context, sel ast.SelectionSet, obj *models_gen.PayloadAuth) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, payloadAuthImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PayloadAuth")
+		case "access_token":
+			out.Values[i] = ec._PayloadAuth_access_token(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "refresh_token":
+			out.Values[i] = ec._PayloadAuth_refresh_token(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "expires_in":
+			out.Values[i] = ec._PayloadAuth_expires_in(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "token_type":
+			out.Values[i] = ec._PayloadAuth_token_type(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var payloadLogoutImplementors = []string{"PayloadLogout"}
+
+func (ec *executionContext) _PayloadLogout(ctx context.Context, sel ast.SelectionSet, obj *models_gen.PayloadLogout) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, payloadLogoutImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PayloadLogout")
+		case "status":
+			out.Values[i] = ec._PayloadLogout_status(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "message":
+			out.Values[i] = ec._PayloadLogout_message(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var productImplementors = []string{"Product"}
 
-func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, obj *models_gen.Product) graphql.Marshaler {
+func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, obj *models.Product) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, productImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -2270,20 +2665,34 @@ func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, 
 		case "id":
 			out.Values[i] = ec._Product_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "no":
+			out.Values[i] = ec._Product_no(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "name":
 			out.Values[i] = ec._Product_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "desp":
 			out.Values[i] = ec._Product_desp(ctx, field, obj)
-		case "images":
-			out.Values[i] = ec._Product_images(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
+		case "product_images":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Product_product_images(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2308,11 +2717,6 @@ func (ec *executionContext) _ProductImage(ctx context.Context, sel ast.Selection
 			out.Values[i] = graphql.MarshalString("ProductImage")
 		case "id":
 			out.Values[i] = ec._ProductImage_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "no":
-			out.Values[i] = ec._ProductImage_no(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -2687,6 +3091,20 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) unmarshalNID2int(ctx context.Context, v interface{}) (int, error) {
+	return graphql.UnmarshalIntID(v)
+}
+
+func (ec *executionContext) marshalNID2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	res := graphql.MarshalIntID(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
 func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
 	return graphql.UnmarshalID(v)
 }
@@ -2719,11 +3137,11 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) marshalNProduct2XinAPIᚋappᚋgraphqlᚋadminᚋmodelsᚐProduct(ctx context.Context, sel ast.SelectionSet, v models_gen.Product) graphql.Marshaler {
+func (ec *executionContext) marshalNProduct2XinAPIᚋappᚋhttpᚋmodelsᚐProduct(ctx context.Context, sel ast.SelectionSet, v models.Product) graphql.Marshaler {
 	return ec._Product(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNProduct2ᚖXinAPIᚋappᚋgraphqlᚋadminᚋmodelsᚐProduct(ctx context.Context, sel ast.SelectionSet, v *models_gen.Product) graphql.Marshaler {
+func (ec *executionContext) marshalNProduct2ᚖXinAPIᚋappᚋhttpᚋmodelsᚐProduct(ctx context.Context, sel ast.SelectionSet, v *models.Product) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")

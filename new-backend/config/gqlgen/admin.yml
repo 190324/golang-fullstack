@@ -16,4 +16,7 @@ resolver:
   layout: follow-schema
   dir: app/graphql/admin/resolvers
   package: resolvers
+models:
+  Product:
+    model: XinAPI/app/http/models.Product
 autobind: []

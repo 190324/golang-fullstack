@@ -1,13 +1,13 @@
 type Product {
     id: ID! 
+    no: String!
     name: String!
     desp: String
-    images: [ProductImage]!
+    product_images: [ProductImage]!
 }
 
 type ProductImage {
     id: ID!
-    no: String!
     product: Product!
     image: String!
     seq: Int!
