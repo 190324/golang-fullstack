@@ -1,0 +1,16 @@
+---
+member:
+  dialect: "mysql"
+  database: "member"
+  host: "127.0.0.1"
+  port: "8889"
+  user: "root"
+  password: "root"
+
+solomo:
+  dialect: "mysql"
+  database: "solomo"
+  host: "127.0.0.1"
+  port: "8889"
+  user: "root"
+  password: "root"

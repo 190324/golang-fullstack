@@ -1,16 +1,13 @@
-package main
+package routesGraphqlAdmin
 
 import (
-	"log"
-	"os"
+	generated "XinAPI/app/graphql/api"
+	resolvers "XinAPI/app/graphql/api/resolvers"
+
+	// models_gen "XinAPI/app/graphql/api/models"
 
 	"github.com/99designs/gqlgen/handler"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
-
-	generated "XinAPI/app/graphql/admin"
-	resolvers "XinAPI/app/graphql/admin/resolvers"
-	middlewares "XinAPI/app/http/middlewares"
 )
 
 // Defining the Graphql handler
@@ -35,21 +32,11 @@ func playgroundHandler() gin.HandlerFunc {
 	}
 }
 
-func main() {
+func SetGraphQLAPIRouter(r *gin.Engine) {
 
-	if err := godotenv.Load(".env"); err != nil {
-		log.Fatalln(err)
-		os.Exit(1)
-	}
+	router := r.Group(`graphql`)
 
-	port := os.Getenv("ADMIN_PORT")
+	router.POST("/", graphqlHandler())
+	router.GET("/playground", playgroundHandler())
 
-	// Setting up Gin
-	r := gin.Default()
-	r.Use(middlewares.Cors())
-
-	r.POST("/query", graphqlHandler())
-	r.GET("/", playgroundHandler())
-
-	log.Fatal(r.Run(":" + port))
 }

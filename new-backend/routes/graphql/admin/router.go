@@ -1,17 +1,13 @@
-package main
+package routesGraphqlAdmin
 
 import (
-	"log"
+	generated "XinAPI/app/graphql/admin"
+	resolvers "XinAPI/app/graphql/admin/resolvers"
 
-	generated "XinAPI/app/graphql/api"
-	resolvers "XinAPI/app/graphql/api/resolvers"
-	middlewares "XinAPI/app/http/middlewares"
-
-	_ "XinAPI/pkg/loadEnv"
+	// models_gen "XinAPI/app/graphql/admin/models"
 
 	"github.com/99designs/gqlgen/handler"
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 )
 
 // Defining the Graphql handler
@@ -36,17 +32,11 @@ func playgroundHandler() gin.HandlerFunc {
 	}
 }
 
-func main() {
+func SetGraphQLRouter(r *gin.Engine) {
 
-	port := viper.GetString("port.api")
+	router := r.Group(`graphql`)
 
-	// Setting up Gin
-	r := gin.Default()
+	router.POST("/", graphqlHandler())
+	router.GET("/playground", playgroundHandler())
 
-	r.Use(middlewares.Cors(viper.GetStringSlice("cors.api")...))
-
-	r.POST("/query", graphqlHandler())
-	r.GET("/", playgroundHandler())
-
-	log.Fatal(r.Run(":" + port))
 }
