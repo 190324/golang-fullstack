@@ -17,24 +17,26 @@ func (r *mutationResolver) SetProduct(ctx context.Context, input models_gen.Inpu
 }
 
 func (r *productResolver) ProductImages(ctx context.Context, obj *models.Product) ([]*models_gen.ProductImage, error) {
-	panic(fmt.Errorf("not implemented"))
-	// db, _ := pop.Connect("solomo")
+	// panic(fmt.Errorf("not implemented"))
+	db, _ := pop.Connect("solomo")
 
-	// productImages := []models.ProductImage{}
-	// query := db.Where("product_id = ?", obj.ID)
-	// err := query.All(&productImages)
+	productImages := []models.ProductImage{}
+	query := db.Where("product_id = ?", obj.ID)
+	err := query.All(&productImages)
 
-	// return []*models_gen.ProductImage{
-	// 	{
-	// 		ID:    "1",
-	// 		Image: "ddd",
-	// 	},
-	// 	{
-	// 		ID:    "2",
-	// 		Image: "bbb",
-	// 	},
-	// }, nil
-	// return *productImages, nil
+	output := []*models_gen.ProductImage{}
+	for _, row := range productImages {
+		output = append(output, &models_gen.ProductImage{
+			ID:     row.ID,
+			Image:  row.Image,
+			Seq:    row.Seq,
+			IsMain: row.IsMain,
+		})
+	}
+
+	fmt.Println(err)
+
+	return output, nil
 }
 
 func (r *queryResolver) Product(ctx context.Context, id string) (*models.Product, error) {
@@ -43,47 +45,12 @@ func (r *queryResolver) Product(ctx context.Context, id string) (*models.Product
 	db, _ := pop.Connect("solomo")
 
 	product := models.Product{}
-	err := db.Eager("ProductImages").First(&product)
-
-	fmt.Println(product.ID)
-	fmt.Println(product.ProductImages)
-
-	// err := db.Find(&product, 1)
+	err := db.Eager("ProductImages").Find(&product, id)
 
 	if err != nil {
 		fmt.Printf("ddd %v", err)
+		return nil, nil
 	}
-
-	// fmt.Println(product)
-
-	// t := &models.Product{
-	// 	No:    "NO00001",
-	// 	Name:  "Apple tree",
-	// 	Price: 100,
-	// 	ProductImages: []models.ProductImage{
-	// 		{
-	// 			Image: "ddd",
-	// 		},
-	// 		{
-	// 			Image: "ddd",
-	// 		},
-	// 	},
-	// }
-
-	// if err := db.Eager().Create(t); err != nil {
-	// 	// return err
-	// 	fmt.Println(err)
-	// }
-
-	// desp := "描述中"
-	// brief := "123"
-
-	// return &models.Product{
-	// 	ID:    1,
-	// 	Name:  "產品一號",
-	// 	Desp:  &desp,
-	// 	Brief: &brief,
-	// }, nil
 
 	return &product, nil
 }

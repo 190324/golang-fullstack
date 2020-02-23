@@ -1,5 +1,5 @@
 type Product {
-    id: ID! 
+    id: Int! 
     no: String!
     name: String!
     desp: String
@@ -7,9 +7,9 @@ type Product {
 }
 
 type ProductImage {
-    id: ID!
+    id: Int!
     product: Product!
     image: String!
     seq: Int!
-    is_main: Boolean!
+    is_main: Int!
 }

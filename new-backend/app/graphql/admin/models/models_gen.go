@@ -12,15 +12,6 @@ type PayloadEntity interface {
 	IsPayloadEntity()
 }
 
-type InputLogin struct {
-	Email    string `json:"email" db:"email"`
-	Password string `json:"password" db:"password"`
-}
-
-type InputRefreshToken struct {
-	RefreshToken *string `json:"refresh_token" db:"refresh_token"`
-}
-
 type InputSetProduct struct {
 	ID     *string           `json:"id" db:"id"`
 	Name   string            `json:"name" db:"name"`
@@ -33,24 +24,12 @@ type Member struct {
 	Name string `json:"name" db:"name"`
 }
 
-type PayloadAuth struct {
-	AccessToken  string `json:"access_token" db:"access_token"`
-	RefreshToken string `json:"refresh_token" db:"refresh_token"`
-	ExpiresIn    int    `json:"expires_in" db:"expires_in"`
-	TokenType    string `json:"token_type" db:"token_type"`
-}
-
-type PayloadLogout struct {
-	Status  string  `json:"status" db:"status"`
-	Message *string `json:"message" db:"message"`
-}
-
 type ProductImage struct {
-	ID      string          `json:"id" db:"id"`
+	ID      int             `json:"id" db:"id"`
 	Product *models.Product `json:"product" db:"product"`
 	Image   string          `json:"image" db:"image"`
 	Seq     int             `json:"seq" db:"seq"`
-	IsMain  bool            `json:"is_main" db:"is_main"`
+	IsMain  int             `json:"is_main" db:"is_main"`
 }
 
 type SetProductPayload struct {

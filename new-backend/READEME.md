@@ -35,3 +35,26 @@ table
 
 gql 
 paginate
+
+audits
+    id
+    user_table
+    user_id
+
+uuids
+
+jobs
+
+password_resets
+    email
+    token
+    created_at
+
+oauth_access_tokens
+    revoked
+    expires_at
+
+oauth_refresh_tokens
+    access_tokens_id
+    revoked
+    expires_at
