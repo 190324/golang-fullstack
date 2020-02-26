@@ -3,9 +3,9 @@
 package resolvers
 
 import (
-	generated "XinAPI/app/graphql/admin"
-	models_gen "XinAPI/app/graphql/admin/models"
 	"XinAPI/app/http/models"
+	generated "XinAPI/build/gqlgen/admin"
+	models_gen "XinAPI/build/gqlgen/admin/models"
 	"context"
 	"fmt"
 
@@ -16,7 +16,7 @@ func (r *mutationResolver) SetProduct(ctx context.Context, input models_gen.Inpu
 	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *productResolver) ProductImages(ctx context.Context, obj *models.Product) ([]*models_gen.ProductImage, error) {
+func (r *queryResolver) ProductImages(ctx context.Context, obj *models.Product) ([]*models_gen.ProductImage, error) {
 	// panic(fmt.Errorf("not implemented"))
 	db, _ := pop.Connect("solomo")
 
@@ -39,26 +39,31 @@ func (r *productResolver) ProductImages(ctx context.Context, obj *models.Product
 	return output, nil
 }
 
-func (r *queryResolver) Product(ctx context.Context, id string) (*models.Product, error) {
+func (r *queryResolver) Product(ctx context.Context, id string) (*models_gen.Product, error) {
 	// panic(fmt.Errorf("not implemented"))
 
-	db, _ := pop.Connect("solomo")
+	// db, _ := pop.Connect("solomo")
 
-	product := models.Product{}
-	err := db.Eager("ProductImages").Find(&product, id)
+	// product := models.Product{}
+	// err := db.Eager("ProductImages").Find(&product, id)
 
-	if err != nil {
-		fmt.Printf("ddd %v", err)
-		return nil, nil
+	// if err != nil {
+	// 	fmt.Printf("ddd %v", err)
+	// 	return nil, nil
+	// }
+
+	desp := "ccc"
+	product := &models_gen.Product{
+		ID:   12356,
+		Name: "c456",
+		Desp: &desp,
 	}
 
-	return &product, nil
+	return product, nil
 }
 
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
-func (r *Resolver) Product() generated.ProductResolver   { return &productResolver{r} }
 func (r *Resolver) Query() generated.QueryResolver       { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
-type productResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

@@ -1,8 +1,8 @@
 package routesGraphqlAdmin
 
 import (
-	generated "XinAPI/app/graphql/api"
 	resolvers "XinAPI/app/graphql/api/resolvers"
+	generated "XinAPI/build/gqlgen/api"
 
 	// models_gen "XinAPI/app/graphql/api/models"
 

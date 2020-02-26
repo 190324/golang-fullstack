@@ -7,16 +7,13 @@ schema:
   - schemas/admin/**/*.graphql
   - schemas/models/**/*.graphql
 exec:
-  filename: app/graphql/admin/generated.go
+  filename: build/gqlgen/admin/generated.go
   package: generated
 model:
-  filename: app/graphql/admin/models/models_gen.go
+  filename: build/gqlgen/admin/models/models_gen.go
   package: models_gen
 resolver:
   layout: follow-schema
   dir: app/graphql/admin/resolvers
   package: resolvers
-models:
-  Product:
-    model: XinAPI/app/http/models.Product
 autobind: []

@@ -7,10 +7,10 @@ schema:
   - schemas/api/**/*.graphql
   - schemas/models/*.graphql
 exec:
-  filename: app/graphql/api/generated.go
+  filename: build/gqlgen/api/generated.go
   package: generated
 model:
-  filename: app/graphql/api/models/models_gen.go
+  filename: build/gqlgen/api/models/models_gen.go
   package: models_gen
 resolver:
   layout: follow-schema

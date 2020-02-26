@@ -3,16 +3,14 @@
 package resolvers
 
 import (
-	generated "XinAPI/app/graphql/api"
-	models_gen "XinAPI/app/graphql/api/models"
 	"XinAPI/app/http/middlewares"
 	"XinAPI/app/mail"
+	generated "XinAPI/build/gqlgen/api"
+	models_gen "XinAPI/build/gqlgen/api/models"
 	"XinAPI/pkg/jwt"
+	"context"
 	"fmt"
 	"time"
-
-	// . "XinAPI/pkg/log"
-	"context"
 )
 
 func (r *mutationResolver) ForgotPassword(ctx context.Context, email string) (*string, error) {
@@ -26,7 +24,6 @@ func (r *mutationResolver) ForgotPassword(ctx context.Context, email string) (*s
 }
 
 func (r *mutationResolver) Login(ctx context.Context, input models_gen.InputLogin) (*models_gen.PayloadAuth, error) {
-
 	if input.Email == "test@liontravel.com" && input.Password == "0000" {
 
 		validTime := time.Hour * time.Duration(1)
@@ -59,7 +56,7 @@ func (r *queryResolver) Me(ctx context.Context) (*models_gen.Member, error) {
 	fmt.Println(gc.Get("role"))
 
 	return &models_gen.Member{
-		ID:   "123",
+		ID:   "12345",
 		Name: "hello world",
 	}, nil
 }

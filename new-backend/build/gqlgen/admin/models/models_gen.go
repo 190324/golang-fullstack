@@ -3,8 +3,6 @@
 package models_gen
 
 import (
-	"XinAPI/app/http/models"
-
 	"github.com/99designs/gqlgen/graphql"
 )
 
@@ -24,12 +22,20 @@ type Member struct {
 	Name string `json:"name" db:"name"`
 }
 
+type Product struct {
+	ID            int             `json:"id" db:"id"`
+	No            string          `json:"no" db:"no"`
+	Name          string          `json:"name" db:"name"`
+	Desp          *string         `json:"desp" db:"desp"`
+	ProductImages []*ProductImage `json:"product_images" db:"product_images"`
+}
+
 type ProductImage struct {
-	ID      int             `json:"id" db:"id"`
-	Product *models.Product `json:"product" db:"product"`
-	Image   string          `json:"image" db:"image"`
-	Seq     int             `json:"seq" db:"seq"`
-	IsMain  int             `json:"is_main" db:"is_main"`
+	ID      int      `json:"id" db:"id"`
+	Product *Product `json:"product" db:"product"`
+	Image   string   `json:"image" db:"image"`
+	Seq     int      `json:"seq" db:"seq"`
+	IsMain  int      `json:"is_main" db:"is_main"`
 }
 
 type SetProductPayload struct {
