@@ -330,7 +330,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	&ast.Source{Name: "schemas/api/member.graphql", Input: `extend type Query {
+	{Name: "schemas/api/member.graphql", Input: `extend type Query {
   me: Member
 }
 
@@ -364,18 +364,18 @@ input InputLogin {
 input InputRefreshToken {
     refresh_token: String
 }`, BuiltIn: false},
-	&ast.Source{Name: "schemas/models/base.graphql", Input: `"The ` + "`" + `Upload` + "`" + ` scalar type represents a multipart file upload."
+	{Name: "schemas/models/base.graphql", Input: `"The ` + "`" + `Upload` + "`" + ` scalar type represents a multipart file upload."
 scalar Upload
 
 interface PayloadEntity {
     code: Int!
     msg: String!
 }`, BuiltIn: false},
-	&ast.Source{Name: "schemas/models/member.graphql", Input: `type Member {
+	{Name: "schemas/models/member.graphql", Input: `type Member {
   id: ID!
   name: String!
 }`, BuiltIn: false},
-	&ast.Source{Name: "schemas/models/product.graphql", Input: `type Product {
+	{Name: "schemas/models/product.graphql", Input: `type Product {
     id: Int! 
     no: String!
     name: String!

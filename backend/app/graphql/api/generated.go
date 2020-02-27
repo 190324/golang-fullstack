@@ -263,13 +263,13 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	&ast.Source{Name: "gqlgen/api/schemas/schema.graphql", Input: `directive @hasRole(role: Role!) on FIELD_DEFINITION
+	{Name: "gqlgen/api/schemas/schema.graphql", Input: `directive @hasRole(role: Role!) on FIELD_DEFINITION
 
 enum Role {
     ADMIN
     USER
 }`, BuiltIn: false},
-	&ast.Source{Name: "gqlgen/api/schemas/todo.graphql", Input: `extend type Query {
+	{Name: "gqlgen/api/schemas/todo.graphql", Input: `extend type Query {
   todos: [Todo!]!
 }
 
@@ -289,7 +289,7 @@ input NewTodo {
   text: String!
   userId: String!
 }`, BuiltIn: false},
-	&ast.Source{Name: "gqlgen/api/schemas/user.graphql", Input: `extend type Query {
+	{Name: "gqlgen/api/schemas/user.graphql", Input: `extend type Query {
   user: User @hasRole(role: ADMIN)
 }
 
@@ -297,7 +297,7 @@ type User {
   id: ID!
   name: String!
 }`, BuiltIn: false},
-	&ast.Source{Name: "gqlgen/schemas/base.graphql", Input: `"The ` + "`" + `Upload` + "`" + ` scalar type represents a multipart file upload."
+	{Name: "gqlgen/schemas/base.graphql", Input: `"The ` + "`" + `Upload` + "`" + ` scalar type represents a multipart file upload."
 scalar Upload
 
 "The ` + "`" + `File` + "`" + ` type, represents the response of uploading a file."

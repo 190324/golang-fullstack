@@ -1,0 +1,43 @@
+settings:
+  legacy:
+    force: false
+    interval: 0s
+schema:
+- name: admin
+  path: .
+  commands:
+    install:
+      method: go build -o tmp/admin.out server/admin/main.go
+      status: true
+    run:
+      method: tmp/admin.out
+      status: true
+  watcher:
+    extensions:
+    - go
+    paths:
+    - /
+    ignore:
+      paths:
+      - .git
+      - .realize
+      - vendor
+- name: api
+  path: .
+  commands: 
+    install:
+      method: go build -o tmp/api.out server/api/main.go
+      status: true
+    run:
+      method: tmp/api.out
+      status: true
+  watcher:
+    extensions:
+    - go
+    paths:
+    - /
+    ignore:
+      paths:
+      - .git
+      - .realize
+      - vendor

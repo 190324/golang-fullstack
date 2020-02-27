@@ -1,10 +1,108 @@
 extend type Query {
     product(ID: ID!): Product!
+
+    # me(): Admin
+    # admin(sn: String): Admin
+    # admins(): [Admin!]!
+
+    # member(sn: String): Member
+    # members(): [Member!]!
+
+    # product(sn: String): Product
+    # products(): [Product!]!
 }
 
 extend type Mutation {
     setProduct(input: InputSetProduct!): SetProductPayload
+    # login(input: I_Login!): R_Login
+    # refreshToken(token: String): R_RefreshToken
+    # forgotPassword(email: String): 
+    # logout(): R_Logout
+    # signup(input: I_Signup): R_Signup
+
+    # createAdmin(input: I_Admin): R_CreateAdmin
+    # updateAdmin(sn: String, input: I_Admin): R_UpdateAdmin
+    # deleteAdmin(sn: String): R_DeleteAdmin
+
+    # createProduct(input: I_Product): R_CreateProduct
+    # updateProduct(sn: String, input: I_Product): R_UpdateProduct
+    # deleteProduct(sn: String): R_DeleteProduct
 }
+# ***
+# subscription
+# fresh
+
+# type I_Login {
+#     email: String!
+#     password: String!
+# }
+
+# type R_Login {
+#     code: String!
+#     msg: String!
+#     data: R_LoginData!
+# }
+
+# type R_LoginData {
+#     accessToken: String!
+#     refreshToken: String!
+#     expireIn: Int!
+#     me: R_LoginDataMe
+# }
+
+# type R_LoginDataMe on Member{
+#     sn
+#     name
+# }
+
+# type Member {
+#     id: Int!
+#     sn: String!
+#     loginType: Int
+#     email: String!
+#     password: String!
+#     name: String!
+#     phone: String!
+# }
+
+enum OpenType {
+    FB
+    GOOGLE
+}
+
+type OpendIds {
+    member_id: Int!
+    open_type: OpenType
+    opend_id: String
+}
+
+type Admin {
+    id: Int!
+    sn: String!
+    name: String!
+    account: String!
+    password: String!
+    isSuper: Boolean
+}
+
+# type Product {
+#     id: Int!
+#     sn: String!
+#     name: String!
+#     brief: String!
+#     desp: String!
+#     listPrice: Int
+#     salePrice: Int
+#     qty: Int
+#     productImages: [ProductImages!]!
+# }
+
+# type ProductImage {
+#     product_id: Int!
+#     image: String!
+#     isMain: Boolean!
+#     seq: Int
+# }
 
 input InputSetProduct {
     id: ID

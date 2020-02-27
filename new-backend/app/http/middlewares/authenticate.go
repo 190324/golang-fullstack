@@ -1,5 +1,5 @@
 package middlewares
 
 func Authenticate() {
-	
+
 }

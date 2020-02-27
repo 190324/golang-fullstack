@@ -3,11 +3,24 @@
 package models_gen
 
 import (
+	"fmt"
+	"io"
+	"strconv"
+
 	"github.com/99designs/gqlgen/graphql"
 )
 
 type PayloadEntity interface {
 	IsPayloadEntity()
+}
+
+type Admin struct {
+	ID       int    `json:"id" db:"id"`
+	Sn       string `json:"sn" db:"sn"`
+	Name     string `json:"name" db:"name"`
+	Account  string `json:"account" db:"account"`
+	Password string `json:"password" db:"password"`
+	IsSuper  *bool  `json:"isSuper" db:"isSuper"`
 }
 
 type InputSetProduct struct {
@@ -22,20 +35,10 @@ type Member struct {
 	Name string `json:"name" db:"name"`
 }
 
-type Product struct {
-	ID            int             `json:"id" db:"id"`
-	No            string          `json:"no" db:"no"`
-	Name          string          `json:"name" db:"name"`
-	Desp          *string         `json:"desp" db:"desp"`
-	ProductImages []*ProductImage `json:"product_images" db:"product_images"`
-}
-
-type ProductImage struct {
-	ID      int      `json:"id" db:"id"`
-	Product *Product `json:"product" db:"product"`
-	Image   string   `json:"image" db:"image"`
-	Seq     int      `json:"seq" db:"seq"`
-	IsMain  int      `json:"is_main" db:"is_main"`
+type OpendIds struct {
+	MemberID int       `json:"member_id" db:"member_id"`
+	OpenType *OpenType `json:"open_type" db:"open_type"`
+	OpendID  *string   `json:"opend_id" db:"opend_id"`
 }
 
 type SetProductPayload struct {
@@ -45,3 +48,44 @@ type SetProductPayload struct {
 }
 
 func (SetProductPayload) IsPayloadEntity() {}
+
+type OpenType string
+
+const (
+	OpenTypeFb     OpenType = "FB"
+	OpenTypeGoogle OpenType = "GOOGLE"
+)
+
+var AllOpenType = []OpenType{
+	OpenTypeFb,
+	OpenTypeGoogle,
+}
+
+func (e OpenType) IsValid() bool {
+	switch e {
+	case OpenTypeFb, OpenTypeGoogle:
+		return true
+	}
+	return false
+}
+
+func (e OpenType) String() string {
+	return string(e)
+}
+
+func (e *OpenType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = OpenType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid OpenType", str)
+	}
+	return nil
+}
+
+func (e OpenType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}

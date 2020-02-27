@@ -16,4 +16,5 @@ resolver:
   layout: follow-schema
   dir: app/graphql/admin/resolvers
   package: resolvers
-autobind: []
+autobind: 
+  - "XinAPI/app/http/models"

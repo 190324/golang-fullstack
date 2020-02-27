@@ -8,6 +8,7 @@ import (
 	models_gen "XinAPI/build/gqlgen/admin/models"
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/gobuffalo/pop"
 )
@@ -16,30 +17,30 @@ func (r *mutationResolver) SetProduct(ctx context.Context, input models_gen.Inpu
 	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *queryResolver) ProductImages(ctx context.Context, obj *models.Product) ([]*models_gen.ProductImage, error) {
+func (r *productResolver) ProductImages(ctx context.Context, obj *models.Product) ([]*models.ProductImage, error) {
 	// panic(fmt.Errorf("not implemented"))
 	db, _ := pop.Connect("solomo")
 
-	productImages := []models.ProductImage{}
+	productImages := []*models.ProductImage{}
 	query := db.Where("product_id = ?", obj.ID)
 	err := query.All(&productImages)
 
-	output := []*models_gen.ProductImage{}
-	for _, row := range productImages {
-		output = append(output, &models_gen.ProductImage{
-			ID:     row.ID,
-			Image:  row.Image,
-			Seq:    row.Seq,
-			IsMain: row.IsMain,
-		})
-	}
+	// output := []*models_gen.ProductImage{}
+	// for _, row := range productImages {
+	// 	output = append(output, &models_gen.ProductImage{
+	// 		ID:     row.ID,
+	// 		Image:  row.Image,
+	// 		Seq:    row.Seq,
+	// 		IsMain: row.IsMain,
+	// 	})
+	// }
 
 	fmt.Println(err)
 
-	return output, nil
+	return productImages, nil
 }
 
-func (r *queryResolver) Product(ctx context.Context, id string) (*models_gen.Product, error) {
+func (r *queryResolver) Product(ctx context.Context, id string) (*models.Product, error) {
 	// panic(fmt.Errorf("not implemented"))
 
 	// db, _ := pop.Connect("solomo")
@@ -52,10 +53,15 @@ func (r *queryResolver) Product(ctx context.Context, id string) (*models_gen.Pro
 	// 	return nil, nil
 	// }
 
+	i, err := strconv.Atoi(id)
+	if err == nil {
+		fmt.Printf("i=%d, type: %T\n", i, i)
+	}
+
 	desp := "ccc"
-	product := &models_gen.Product{
-		ID:   12356,
-		Name: "c456",
+	product := &models.Product{
+		ID:   i,
+		Name: "c4567",
 		Desp: &desp,
 	}
 
@@ -63,7 +69,9 @@ func (r *queryResolver) Product(ctx context.Context, id string) (*models_gen.Pro
 }
 
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
+func (r *Resolver) Product() generated.ProductResolver   { return &productResolver{r} }
 func (r *Resolver) Query() generated.QueryResolver       { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
+type productResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

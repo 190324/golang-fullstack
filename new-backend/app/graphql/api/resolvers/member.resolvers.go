@@ -56,7 +56,7 @@ func (r *queryResolver) Me(ctx context.Context) (*models_gen.Member, error) {
 	fmt.Println(gc.Get("role"))
 
 	return &models_gen.Member{
-		ID:   "12345",
+		ID:   "12345678",
 		Name: "hello world",
 	}, nil
 }

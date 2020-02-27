@@ -2,6 +2,6 @@ package commands
 
 import "log"
 
-func Test()  {
+func Test() {
 	log.Printf("echo test")
 }

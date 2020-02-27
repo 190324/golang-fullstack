@@ -3,6 +3,7 @@
 package generated
 
 import (
+	"XinAPI/app/http/models"
 	models_gen "XinAPI/build/gqlgen/admin/models"
 	"bytes"
 	"context"
@@ -37,6 +38,7 @@ type Config struct {
 
 type ResolverRoot interface {
 	Mutation() MutationResolver
+	Product() ProductResolver
 	Query() QueryResolver
 }
 
@@ -44,6 +46,15 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	Admin struct {
+		Account  func(childComplexity int) int
+		ID       func(childComplexity int) int
+		IsSuper  func(childComplexity int) int
+		Name     func(childComplexity int) int
+		Password func(childComplexity int) int
+		Sn       func(childComplexity int) int
+	}
+
 	Member struct {
 		ID   func(childComplexity int) int
 		Name func(childComplexity int) int
@@ -53,8 +64,13 @@ type ComplexityRoot struct {
 		SetProduct func(childComplexity int, input models_gen.InputSetProduct) int
 	}
 
+	OpendIds struct {
+		MemberID func(childComplexity int) int
+		OpenType func(childComplexity int) int
+		OpendID  func(childComplexity int) int
+	}
+
 	Product struct {
-		Desp          func(childComplexity int) int
 		ID            func(childComplexity int) int
 		Name          func(childComplexity int) int
 		No            func(childComplexity int) int
@@ -83,8 +99,11 @@ type ComplexityRoot struct {
 type MutationResolver interface {
 	SetProduct(ctx context.Context, input models_gen.InputSetProduct) (*models_gen.SetProductPayload, error)
 }
+type ProductResolver interface {
+	ProductImages(ctx context.Context, obj *models.Product) ([]*models.ProductImage, error)
+}
 type QueryResolver interface {
-	Product(ctx context.Context, id string) (*models_gen.Product, error)
+	Product(ctx context.Context, id string) (*models.Product, error)
 }
 
 type executableSchema struct {
@@ -101,6 +120,48 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "Admin.account":
+		if e.complexity.Admin.Account == nil {
+			break
+		}
+
+		return e.complexity.Admin.Account(childComplexity), true
+
+	case "Admin.id":
+		if e.complexity.Admin.ID == nil {
+			break
+		}
+
+		return e.complexity.Admin.ID(childComplexity), true
+
+	case "Admin.isSuper":
+		if e.complexity.Admin.IsSuper == nil {
+			break
+		}
+
+		return e.complexity.Admin.IsSuper(childComplexity), true
+
+	case "Admin.name":
+		if e.complexity.Admin.Name == nil {
+			break
+		}
+
+		return e.complexity.Admin.Name(childComplexity), true
+
+	case "Admin.password":
+		if e.complexity.Admin.Password == nil {
+			break
+		}
+
+		return e.complexity.Admin.Password(childComplexity), true
+
+	case "Admin.sn":
+		if e.complexity.Admin.Sn == nil {
+			break
+		}
+
+		return e.complexity.Admin.Sn(childComplexity), true
 
 	case "Member.id":
 		if e.complexity.Member.ID == nil {
@@ -128,12 +189,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.SetProduct(childComplexity, args["input"].(models_gen.InputSetProduct)), true
 
-	case "Product.desp":
-		if e.complexity.Product.Desp == nil {
+	case "OpendIds.member_id":
+		if e.complexity.OpendIds.MemberID == nil {
 			break
 		}
 
-		return e.complexity.Product.Desp(childComplexity), true
+		return e.complexity.OpendIds.MemberID(childComplexity), true
+
+	case "OpendIds.open_type":
+		if e.complexity.OpendIds.OpenType == nil {
+			break
+		}
+
+		return e.complexity.OpendIds.OpenType(childComplexity), true
+
+	case "OpendIds.opend_id":
+		if e.complexity.OpendIds.OpendID == nil {
+			break
+		}
+
+		return e.complexity.OpendIds.OpendID(childComplexity), true
 
 	case "Product.id":
 		if e.complexity.Product.ID == nil {
@@ -295,13 +370,111 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	&ast.Source{Name: "schemas/admin/product.graphql", Input: `extend type Query {
+	{Name: "schemas/admin/product.graphql", Input: `extend type Query {
     product(ID: ID!): Product!
+
+    # me(): Admin
+    # admin(sn: String): Admin
+    # admins(): [Admin!]!
+
+    # member(sn: String): Member
+    # members(): [Member!]!
+
+    # product(sn: String): Product
+    # products(): [Product!]!
 }
 
 extend type Mutation {
     setProduct(input: InputSetProduct!): SetProductPayload
+    # login(input: I_Login!): R_Login
+    # refreshToken(token: String): R_RefreshToken
+    # forgotPassword(email: String): 
+    # logout(): R_Logout
+    # signup(input: I_Signup): R_Signup
+
+    # createAdmin(input: I_Admin): R_CreateAdmin
+    # updateAdmin(sn: String, input: I_Admin): R_UpdateAdmin
+    # deleteAdmin(sn: String): R_DeleteAdmin
+
+    # createProduct(input: I_Product): R_CreateProduct
+    # updateProduct(sn: String, input: I_Product): R_UpdateProduct
+    # deleteProduct(sn: String): R_DeleteProduct
 }
+# ***
+# subscription
+# fresh
+
+# type I_Login {
+#     email: String!
+#     password: String!
+# }
+
+# type R_Login {
+#     code: String!
+#     msg: String!
+#     data: R_LoginData!
+# }
+
+# type R_LoginData {
+#     accessToken: String!
+#     refreshToken: String!
+#     expireIn: Int!
+#     me: R_LoginDataMe
+# }
+
+# type R_LoginDataMe on Member{
+#     sn
+#     name
+# }
+
+# type Member {
+#     id: Int!
+#     sn: String!
+#     loginType: Int
+#     email: String!
+#     password: String!
+#     name: String!
+#     phone: String!
+# }
+
+enum OpenType {
+    FB
+    GOOGLE
+}
+
+type OpendIds {
+    member_id: Int!
+    open_type: OpenType
+    opend_id: String
+}
+
+type Admin {
+    id: Int!
+    sn: String!
+    name: String!
+    account: String!
+    password: String!
+    isSuper: Boolean
+}
+
+# type Product {
+#     id: Int!
+#     sn: String!
+#     name: String!
+#     brief: String!
+#     desp: String!
+#     listPrice: Int
+#     salePrice: Int
+#     qty: Int
+#     productImages: [ProductImages!]!
+# }
+
+# type ProductImage {
+#     product_id: Int!
+#     image: String!
+#     isMain: Boolean!
+#     seq: Int
+# }
 
 input InputSetProduct {
     id: ID
@@ -315,32 +488,42 @@ type SetProductPayload implements PayloadEntity{
     msg: String!
     data: String!
 } `, BuiltIn: false},
-	&ast.Source{Name: "schemas/models/base.graphql", Input: `"The ` + "`" + `Upload` + "`" + ` scalar type represents a multipart file upload."
+	{Name: "schemas/models/base.graphql", Input: `"The ` + "`" + `Upload` + "`" + ` scalar type represents a multipart file upload."
 scalar Upload
 
 interface PayloadEntity {
     code: Int!
     msg: String!
 }`, BuiltIn: false},
-	&ast.Source{Name: "schemas/models/member.graphql", Input: `type Member {
+	{Name: "schemas/models/member.graphql", Input: `type Member {
   id: ID!
   name: String!
 }`, BuiltIn: false},
-	&ast.Source{Name: "schemas/models/product.graphql", Input: `type Product {
+	{Name: "schemas/models/product.graphql", Input: `type Product{
     id: Int! 
     no: String!
     name: String!
-    desp: String
-    product_images: [ProductImage]!
+    # desp: String
+    product_images: [ProductImage]! @goField(forceResolver: true)
 }
 
-type ProductImage {
+type ProductImage{
     id: Int!
     product: Product!
     image: String!
     seq: Int!
     is_main: Int!
-}`, BuiltIn: false},
+}
+
+directive @goModel(model: String, models: [String!]) on OBJECT
+    | INPUT_OBJECT
+    | SCALAR
+    | ENUM
+    | INTERFACE
+    | UNION
+
+directive @goField(forceResolver: Boolean, name: String) on INPUT_FIELD_DEFINITION
+    | FIELD_DEFINITION`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
@@ -425,6 +608,207 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _Admin_id(ctx context.Context, field graphql.CollectedField, obj *models_gen.Admin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Admin",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Admin_sn(ctx context.Context, field graphql.CollectedField, obj *models_gen.Admin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Admin",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Sn, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Admin_name(ctx context.Context, field graphql.CollectedField, obj *models_gen.Admin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Admin",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Admin_account(ctx context.Context, field graphql.CollectedField, obj *models_gen.Admin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Admin",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Account, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Admin_password(ctx context.Context, field graphql.CollectedField, obj *models_gen.Admin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Admin",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Password, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Admin_isSuper(ctx context.Context, field graphql.CollectedField, obj *models_gen.Admin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Admin",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsSuper, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
 
 func (ec *executionContext) _Member_id(ctx context.Context, field graphql.CollectedField, obj *models_gen.Member) (ret graphql.Marshaler) {
 	defer func() {
@@ -532,7 +916,103 @@ func (ec *executionContext) _Mutation_setProduct(ctx context.Context, field grap
 	return ec.marshalOSetProductPayload2ᚖXinAPIᚋbuildᚋgqlgenᚋadminᚋmodelsᚐSetProductPayload(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Product_id(ctx context.Context, field graphql.CollectedField, obj *models_gen.Product) (ret graphql.Marshaler) {
+func (ec *executionContext) _OpendIds_member_id(ctx context.Context, field graphql.CollectedField, obj *models_gen.OpendIds) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "OpendIds",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MemberID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _OpendIds_open_type(ctx context.Context, field graphql.CollectedField, obj *models_gen.OpendIds) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "OpendIds",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.OpenType, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models_gen.OpenType)
+	fc.Result = res
+	return ec.marshalOOpenType2ᚖXinAPIᚋbuildᚋgqlgenᚋadminᚋmodelsᚐOpenType(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _OpendIds_opend_id(ctx context.Context, field graphql.CollectedField, obj *models_gen.OpendIds) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "OpendIds",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.OpendID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Product_id(ctx context.Context, field graphql.CollectedField, obj *models.Product) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -566,7 +1046,7 @@ func (ec *executionContext) _Product_id(ctx context.Context, field graphql.Colle
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Product_no(ctx context.Context, field graphql.CollectedField, obj *models_gen.Product) (ret graphql.Marshaler) {
+func (ec *executionContext) _Product_no(ctx context.Context, field graphql.CollectedField, obj *models.Product) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -600,7 +1080,7 @@ func (ec *executionContext) _Product_no(ctx context.Context, field graphql.Colle
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Product_name(ctx context.Context, field graphql.CollectedField, obj *models_gen.Product) (ret graphql.Marshaler) {
+func (ec *executionContext) _Product_name(ctx context.Context, field graphql.CollectedField, obj *models.Product) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -634,7 +1114,7 @@ func (ec *executionContext) _Product_name(ctx context.Context, field graphql.Col
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Product_desp(ctx context.Context, field graphql.CollectedField, obj *models_gen.Product) (ret graphql.Marshaler) {
+func (ec *executionContext) _Product_product_images(ctx context.Context, field graphql.CollectedField, obj *models.Product) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -645,44 +1125,13 @@ func (ec *executionContext) _Product_desp(ctx context.Context, field graphql.Col
 		Object:   "Product",
 		Field:    field,
 		Args:     nil,
-		IsMethod: false,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Desp, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*string)
-	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Product_product_images(ctx context.Context, field graphql.CollectedField, obj *models_gen.Product) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Product",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ProductImages, nil
+		return ec.resolvers.Product().ProductImages(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -694,12 +1143,12 @@ func (ec *executionContext) _Product_product_images(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models_gen.ProductImage)
+	res := resTmp.([]*models.ProductImage)
 	fc.Result = res
-	return ec.marshalNProductImage2ᚕᚖXinAPIᚋbuildᚋgqlgenᚋadminᚋmodelsᚐProductImage(ctx, field.Selections, res)
+	return ec.marshalNProductImage2ᚕᚖXinAPIᚋappᚋhttpᚋmodelsᚐProductImage(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _ProductImage_id(ctx context.Context, field graphql.CollectedField, obj *models_gen.ProductImage) (ret graphql.Marshaler) {
+func (ec *executionContext) _ProductImage_id(ctx context.Context, field graphql.CollectedField, obj *models.ProductImage) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -733,7 +1182,7 @@ func (ec *executionContext) _ProductImage_id(ctx context.Context, field graphql.
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _ProductImage_product(ctx context.Context, field graphql.CollectedField, obj *models_gen.ProductImage) (ret graphql.Marshaler) {
+func (ec *executionContext) _ProductImage_product(ctx context.Context, field graphql.CollectedField, obj *models.ProductImage) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -762,12 +1211,12 @@ func (ec *executionContext) _ProductImage_product(ctx context.Context, field gra
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*models_gen.Product)
+	res := resTmp.(*models.Product)
 	fc.Result = res
-	return ec.marshalNProduct2ᚖXinAPIᚋbuildᚋgqlgenᚋadminᚋmodelsᚐProduct(ctx, field.Selections, res)
+	return ec.marshalNProduct2ᚖXinAPIᚋappᚋhttpᚋmodelsᚐProduct(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _ProductImage_image(ctx context.Context, field graphql.CollectedField, obj *models_gen.ProductImage) (ret graphql.Marshaler) {
+func (ec *executionContext) _ProductImage_image(ctx context.Context, field graphql.CollectedField, obj *models.ProductImage) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -801,7 +1250,7 @@ func (ec *executionContext) _ProductImage_image(ctx context.Context, field graph
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _ProductImage_seq(ctx context.Context, field graphql.CollectedField, obj *models_gen.ProductImage) (ret graphql.Marshaler) {
+func (ec *executionContext) _ProductImage_seq(ctx context.Context, field graphql.CollectedField, obj *models.ProductImage) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -835,7 +1284,7 @@ func (ec *executionContext) _ProductImage_seq(ctx context.Context, field graphql
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _ProductImage_is_main(ctx context.Context, field graphql.CollectedField, obj *models_gen.ProductImage) (ret graphql.Marshaler) {
+func (ec *executionContext) _ProductImage_is_main(ctx context.Context, field graphql.CollectedField, obj *models.ProductImage) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -905,9 +1354,9 @@ func (ec *executionContext) _Query_product(ctx context.Context, field graphql.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*models_gen.Product)
+	res := resTmp.(*models.Product)
 	fc.Result = res
-	return ec.marshalNProduct2ᚖXinAPIᚋbuildᚋgqlgenᚋadminᚋmodelsᚐProduct(ctx, field.Selections, res)
+	return ec.marshalNProduct2ᚖXinAPIᚋappᚋhttpᚋmodelsᚐProduct(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2196,6 +2645,55 @@ func (ec *executionContext) _PayloadEntity(ctx context.Context, sel ast.Selectio
 
 // region    **************************** object.gotpl ****************************
 
+var adminImplementors = []string{"Admin"}
+
+func (ec *executionContext) _Admin(ctx context.Context, sel ast.SelectionSet, obj *models_gen.Admin) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, adminImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Admin")
+		case "id":
+			out.Values[i] = ec._Admin_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "sn":
+			out.Values[i] = ec._Admin_sn(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "name":
+			out.Values[i] = ec._Admin_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "account":
+			out.Values[i] = ec._Admin_account(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "password":
+			out.Values[i] = ec._Admin_password(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "isSuper":
+			out.Values[i] = ec._Admin_isSuper(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var memberImplementors = []string{"Member"}
 
 func (ec *executionContext) _Member(ctx context.Context, sel ast.SelectionSet, obj *models_gen.Member) graphql.Marshaler {
@@ -2256,9 +2754,40 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 	return out
 }
 
+var opendIdsImplementors = []string{"OpendIds"}
+
+func (ec *executionContext) _OpendIds(ctx context.Context, sel ast.SelectionSet, obj *models_gen.OpendIds) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, opendIdsImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("OpendIds")
+		case "member_id":
+			out.Values[i] = ec._OpendIds_member_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "open_type":
+			out.Values[i] = ec._OpendIds_open_type(ctx, field, obj)
+		case "opend_id":
+			out.Values[i] = ec._OpendIds_opend_id(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var productImplementors = []string{"Product"}
 
-func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, obj *models_gen.Product) graphql.Marshaler {
+func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, obj *models.Product) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, productImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -2270,25 +2799,32 @@ func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, 
 		case "id":
 			out.Values[i] = ec._Product_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "no":
 			out.Values[i] = ec._Product_no(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "name":
 			out.Values[i] = ec._Product_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
-		case "desp":
-			out.Values[i] = ec._Product_desp(ctx, field, obj)
 		case "product_images":
-			out.Values[i] = ec._Product_product_images(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Product_product_images(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2302,7 +2838,7 @@ func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, 
 
 var productImageImplementors = []string{"ProductImage"}
 
-func (ec *executionContext) _ProductImage(ctx context.Context, sel ast.SelectionSet, obj *models_gen.ProductImage) graphql.Marshaler {
+func (ec *executionContext) _ProductImage(ctx context.Context, sel ast.SelectionSet, obj *models.ProductImage) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, productImageImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -2719,11 +3255,11 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) marshalNProduct2XinAPIᚋbuildᚋgqlgenᚋadminᚋmodelsᚐProduct(ctx context.Context, sel ast.SelectionSet, v models_gen.Product) graphql.Marshaler {
+func (ec *executionContext) marshalNProduct2XinAPIᚋappᚋhttpᚋmodelsᚐProduct(ctx context.Context, sel ast.SelectionSet, v models.Product) graphql.Marshaler {
 	return ec._Product(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNProduct2ᚖXinAPIᚋbuildᚋgqlgenᚋadminᚋmodelsᚐProduct(ctx context.Context, sel ast.SelectionSet, v *models_gen.Product) graphql.Marshaler {
+func (ec *executionContext) marshalNProduct2ᚖXinAPIᚋappᚋhttpᚋmodelsᚐProduct(ctx context.Context, sel ast.SelectionSet, v *models.Product) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -2733,7 +3269,7 @@ func (ec *executionContext) marshalNProduct2ᚖXinAPIᚋbuildᚋgqlgenᚋadmin�
 	return ec._Product(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNProductImage2ᚕᚖXinAPIᚋbuildᚋgqlgenᚋadminᚋmodelsᚐProductImage(ctx context.Context, sel ast.SelectionSet, v []*models_gen.ProductImage) graphql.Marshaler {
+func (ec *executionContext) marshalNProductImage2ᚕᚖXinAPIᚋappᚋhttpᚋmodelsᚐProductImage(ctx context.Context, sel ast.SelectionSet, v []*models.ProductImage) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -2757,7 +3293,7 @@ func (ec *executionContext) marshalNProductImage2ᚕᚖXinAPIᚋbuildᚋgqlgen�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOProductImage2ᚖXinAPIᚋbuildᚋgqlgenᚋadminᚋmodelsᚐProductImage(ctx, sel, v[i])
+			ret[i] = ec.marshalOProductImage2ᚖXinAPIᚋappᚋhttpᚋmodelsᚐProductImage(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3117,11 +3653,35 @@ func (ec *executionContext) marshalOID2ᚖstring(ctx context.Context, sel ast.Se
 	return ec.marshalOID2string(ctx, sel, *v)
 }
 
-func (ec *executionContext) marshalOProductImage2XinAPIᚋbuildᚋgqlgenᚋadminᚋmodelsᚐProductImage(ctx context.Context, sel ast.SelectionSet, v models_gen.ProductImage) graphql.Marshaler {
+func (ec *executionContext) unmarshalOOpenType2XinAPIᚋbuildᚋgqlgenᚋadminᚋmodelsᚐOpenType(ctx context.Context, v interface{}) (models_gen.OpenType, error) {
+	var res models_gen.OpenType
+	return res, res.UnmarshalGQL(v)
+}
+
+func (ec *executionContext) marshalOOpenType2XinAPIᚋbuildᚋgqlgenᚋadminᚋmodelsᚐOpenType(ctx context.Context, sel ast.SelectionSet, v models_gen.OpenType) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalOOpenType2ᚖXinAPIᚋbuildᚋgqlgenᚋadminᚋmodelsᚐOpenType(ctx context.Context, v interface{}) (*models_gen.OpenType, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalOOpenType2XinAPIᚋbuildᚋgqlgenᚋadminᚋmodelsᚐOpenType(ctx, v)
+	return &res, err
+}
+
+func (ec *executionContext) marshalOOpenType2ᚖXinAPIᚋbuildᚋgqlgenᚋadminᚋmodelsᚐOpenType(ctx context.Context, sel ast.SelectionSet, v *models_gen.OpenType) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
+}
+
+func (ec *executionContext) marshalOProductImage2XinAPIᚋappᚋhttpᚋmodelsᚐProductImage(ctx context.Context, sel ast.SelectionSet, v models.ProductImage) graphql.Marshaler {
 	return ec._ProductImage(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalOProductImage2ᚖXinAPIᚋbuildᚋgqlgenᚋadminᚋmodelsᚐProductImage(ctx context.Context, sel ast.SelectionSet, v *models_gen.ProductImage) graphql.Marshaler {
+func (ec *executionContext) marshalOProductImage2ᚖXinAPIᚋappᚋhttpᚋmodelsᚐProductImage(ctx context.Context, sel ast.SelectionSet, v *models.ProductImage) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -3145,6 +3705,38 @@ func (ec *executionContext) unmarshalOString2string(ctx context.Context, v inter
 
 func (ec *executionContext) marshalOString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	return graphql.MarshalString(v)
+}
+
+func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOString2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
+	}
+
+	return ret
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
