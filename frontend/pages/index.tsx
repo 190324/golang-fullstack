@@ -1,46 +1,44 @@
-
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from "@apollo/react-hooks";
 // import { NetworkStatus } from 'apollo-client'
-import gql from 'graphql-tag'
+import gql from "graphql-tag";
 
-const TODOS = gql`
-  query todos {
-    todos {
-        id
-        text
+const MEMBERS = gql`
+  query members {
+    members {
+      data {
+        sn
+        first_name
+      }
     }
   }
-`
+`;
 
 const Page = () => {
-    const { loading, error, data, fetchMore, networkStatus } = useQuery(
-        TODOS,
-        {
-          notifyOnNetworkStatusChange: true,
-        }
-      )
+  const { loading, error, data, fetchMore, networkStatus } = useQuery(MEMBERS, {
+    // notifyOnNetworkStatusChange: true
+  });
 
-    if (error) return <div>Error</div>
-    if (loading) return <div>Loading</div>
+  if (error) return <div>Error</div>;
+  if (loading) return <div>Loading</div>;
 
-    const { todos } = data
+  const { members } = data;
 
-    console.log(todos);
+  console.log(members);
 
-    return (
-        <section>
-            <ul>
-            {todos.map((todo, index) => (
-                <li key={todo.id}>
-                <div>
-                    <span>{index + 1}. </span>
-                    <span>{todo.text}</span>
-                </div>
-                </li>
-            ))}
-            </ul>
-        </section>
-    )
-}
+  return (
+    <section>
+      <ul>
+        {/* {members.map((todo, index) => (
+          <li key={todo.id}>
+            <div>
+              <span>{index + 1}. </span>
+              <span>{todo.text}</span>
+            </div>
+          </li>
+        ))} */}
+      </ul>
+    </section>
+  );
+};
 
-export default Page
+export default Page;

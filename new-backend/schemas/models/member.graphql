@@ -1,4 +1,0 @@
-type Member {
-  id: ID!
-  name: String!
-}

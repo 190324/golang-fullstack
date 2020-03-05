@@ -1,7 +1,0 @@
-"The `Upload` scalar type represents a multipart file upload."
-scalar Upload
-
-interface PayloadEntity {
-    code: Int!
-    msg: String!
-}
